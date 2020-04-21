@@ -40,7 +40,6 @@ app.use(async (ctx, next) => {
   }
 });
 
-// => Body Parsers
 app.use(koaBody({
   text: true,
   urlencoded: true,
@@ -74,33 +73,16 @@ function sendMessage(id, itemMsg) {
 }
 
 router.post('/inst', async (ctx, next) => {
-  // create new contact
   console.log('add inst');
   const id = uuid.v4();
-  // let msg = JSON.stringify({
-  //   type: 'message',
-  //   name: id,
-  //   msg: 'Received "Create commaand"',
-  //   dateTime: new Date(),
-  // });
-  // [...wsServer.clients][0].send(msg);
 
-  sendMessage(id, 'Received "Create commaand"');
+  sendMessage(id, 'Received "Create command"');
 
   setTimeout(() => {
     instance.push({
       id,
       state: 'stopped',
     });
-
-  // msg server add
-  // msg = JSON.stringify({
-  //   type: 'message',
-  //   name: id,
-  //   msg: 'Created',
-  //   dateTime: new Date(),
-  // });
-  // [...wsServer.clients][0].send(msg);
   sendMessage(id, 'Created');
   }, 5000);
   console.log('added');
@@ -133,7 +115,7 @@ router.delete('/inst/:id', async (ctx, next) => {
   });
   console.log(index);
   if (index !== -1) {
-    sendMessage(ctx.params.id, 'Received "Delete instace"');
+    sendMessage(ctx.params.id, 'Received "Delete instance"');
     setTimeout(() => {
       instance.splice(index, 1);
       sendMessage(ctx.params.id, 'Deleted');
@@ -165,13 +147,11 @@ wsServer.on('connection', (ws, req) => {
   ws.on('change', msg => {
     console.log('change');
   });
-  // new users
   [...wsServer.clients]
     .filter(o => {
       return o.readyState === WS.OPEN;
     })
     .forEach(o => o.send(JSON.stringify({type: 'add user'})));
-//  ws.send('welcome');
 });
 
 app.use(router.routes()).use(router.allowedMethods());
